@@ -252,6 +252,38 @@ function getTextTokensDimensions(doc, font_size, tokens) {
   return { w: tw, h: th };
 }
 
+function getDayName(dateString, oneLetter) {
+  const daysOfWeekEn = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const daysOfWeekFr = [
+    "Dimanche",
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+  ];
+
+  // Create a new Date object from the given date string
+  const date = new Date(dateString);
+
+  // Get the day of the week (0-6)
+  const dayOfWeekIndex = date.getDay();
+
+  // Get the day name from the array
+  const dayName = daysOfWeekFr[dayOfWeekIndex];
+
+  return oneLetter ? dayName[0] : dayName;
+}
+
 export {
   hline,
   vline,
@@ -264,4 +296,5 @@ export {
   getTextTokensDimensions,
   centeTextInRect,
   drawTextInRect,
+  getDayName,
 };

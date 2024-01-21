@@ -10,6 +10,7 @@ import {
   draw_en_tete,
   centeTextInRect,
   drawTextInRect,
+  getDayName,
 } from "./funcs.mjs";
 
 const orientation = "landscape";
@@ -77,7 +78,20 @@ const PAGE_MARG = 15;
 const FONT_SIZE = 12;
 const BOX_WIDTH_SPACE_PCT = 1.1;
 
-function draw_agent_rl(rld) {
+function draw_agent_roulement(agent_data) {
+  const { month, year } = agent_data;
+  let days_letters = [];
+  const array_rld = agent_data.rld.split("");
+  const END_DATE = array_rld.length;
+  const num_days = array_rld.length;
+
+  array_rld.map((d, i) => {
+    let ds = `${month}/${i + 1}/${year}`;
+    let dt = new Date(ds).toString();
+    let dname = getDayName(ds, true);
+    days_letters[i] = dname;
+  });
+
   doc.setFontSize(FONT_SIZE);
   draw_en_tete(doc, PAGE_MARG, PG_W, LOGO_H, (h) => {
     let text_tokens = [{ lat: "Num / " }, { zh: "序号" }];
@@ -105,7 +119,7 @@ function draw_agent_rl(rld) {
       [{ lat: "13" }]
     );
 
-    text_tokens = [{ lat: rld.nom }, { zh: "库齐" }];
+    text_tokens = [{ lat: agent_data.nom }, { zh: "库齐" }];
     let rect_row_agent = centeTextInRect(
       doc,
       PAGE_MARG + rect_row_num.w,
@@ -151,9 +165,6 @@ function draw_agent_rl(rld) {
       FONT_SIZE
     );
 
-    const array_rld = rld.rld.split("");
-    const END_DATE = array_rld.length;
-    const num_days = array_rld.length;
     let day_box_w =
       (PG_W - PAGE_MARG - (rect_row_mat.x + rect_row_mat.w)) / num_days;
 
@@ -170,6 +181,15 @@ function draw_agent_rl(rld) {
       const rld_data_y = rect_row_mat.y;
 
       doc.rect(date_x, day_box_y, day_box_w, day_box_h);
+      drawTextInRect(
+        doc,
+        days_letters[i],
+        FONT_SIZE,
+        date_x,
+        day_box_y,
+        day_box_w,
+        day_box_h
+      );
       doc.rect(date_x, date_box_y, day_box_w, day_box_h);
 
       if (date > END_DATE) date = 1;
@@ -206,7 +226,13 @@ function draw_agent_rl(rld) {
   doc.save("rl.pdf");
 }
 
-draw_agent_rl(agents_rl[0]);
+draw_agent_roulement({
+  nom: "MUTUNDA KOJI Franvale",
+  zh: "库齐",
+  rld: "JJJNNNRRRJJJNNNRRRJJJNNNRRRJJJN",
+  month: 1,
+  year: 2024,
+}); //agents_rl[0]);
 
 //draw_rl(agents_rl);
 //food_list(agents_food);
