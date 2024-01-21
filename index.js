@@ -119,7 +119,7 @@ function draw_agent_roulement(agent_data) {
       [{ lat: "13" }]
     );
 
-    text_tokens = [{ lat: agent_data.nom }, { zh: "库齐" }];
+    text_tokens = [{ lat: agent_data.nom.fr }, { zh: agent_data.nom.zh }];
     let rect_row_agent = centeTextInRect(
       doc,
       PAGE_MARG + rect_row_num.w,
@@ -217,22 +217,24 @@ function draw_agent_roulement(agent_data) {
         day_box_h
       );
     });
-    /* array.forEach((el, i) => {
-      let x = rect_row_mat.x + rect_row_mat.w + i + day_box_w;
-      doc.rect(x, rect_row_mat.y, day_box_w, rect_row_mat.h);
-    }); */
   });
 
   doc.save("rl.pdf");
 }
 
-draw_agent_roulement({
-  nom: "MUTUNDA KOJI Franvale",
-  zh: "库齐",
-  rld: "JJJNNNRRRJJJNNNRRRJJJNNNRRRJJJN",
-  month: 1,
-  year: 2024,
-}); //agents_rl[0]);
+const agz = [
+  ...Array(5).fill({
+    nom: {
+      fr: "MUTUNDA KOJI Franvale",
+      zh: "库齐",
+    },
+    rld: "JJJNNNRRRJJJNNNRRRJJJNNNRRRJJJN",
+    month: 1,
+    year: 2024,
+  }),
+];
+
+draw_agent_roulement(agz[0]); //agents_rl[0]);
 
 //draw_rl(agents_rl);
 //food_list(agents_food);
