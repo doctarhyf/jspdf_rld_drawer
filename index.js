@@ -75,7 +75,7 @@ function draw_rl(agents_rl) {
   doc.save("rl.pdf");
 }
 const PAGE_MARG = 15;
-const FONT_SIZE = 12;
+const FONT_SIZE = 8;
 const BOX_WIDTH_SPACE_PCT = 1.1;
 
 function draw_agent_roulement(agent_data) {
@@ -93,7 +93,7 @@ function draw_agent_roulement(agent_data) {
   });
 
   doc.setFontSize(FONT_SIZE);
-  draw_en_tete(doc, PAGE_MARG, PG_W, LOGO_H, (h) => {
+  draw_en_tete(doc, agent_data, PAGE_MARG, PG_W, LOGO_H, (h) => {
     let text_tokens = [{ lat: "Num / " }, { zh: "序号" }];
 
     hline(doc, PAGE_MARG, h, PG_W - PAGE_MARG * 2);
@@ -231,6 +231,7 @@ const agz = [
     rld: "JJJNNNRRRJJJNNNRRRJJJNNNRRRJJJN",
     month: 1,
     year: 2024,
+    poste: "INT",
   }),
 ];
 

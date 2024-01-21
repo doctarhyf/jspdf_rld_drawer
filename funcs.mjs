@@ -116,6 +116,7 @@ function drawLogo(doc) {
 
 function draw_en_tete(
   doc,
+  agent_data,
   page_margin,
   page_width,
   logo_height,
@@ -141,16 +142,31 @@ function draw_en_tete(
   const lineHeight = fontSize / 2;
 
   const title_y = 30;
-  const text_gck = [{ lat: "GCK" }, { zh: "公司水泥线水泥翻译名单" }];
+
+  let poste_zh = "岗位"; // postes_zh_array[poste] !!!!!
+
+  const text_gck = [
+    { lat: "GCK" },
+    { zh: "公司水泥线水泥" },
+    { zh: poste_zh },
+    { zh: "名单" },
+  ];
   const text_poste = [
-    { lat: "INTERPRÈTE/" },
-    { zh: "翻译" },
+    { lat: `${agent_data.poste}/` },
+    { zh: "" },
     { lat: ": ATELIER DE CIMENT" },
   ];
+
+  let cury = agent_data.year;
+  let curm = agent_data.month - 1;
+  let nextm = curm + 1 > 12 ? 1 : curm + 1;
+  let curmn = getFrenchMonthName(curm).toUpperCase();
+  let nextmn = getFrenchMonthName(nextm).toUpperCase();
+
   const text_roulement_month = [
-    { lat: "NOVEMBRE- DECEMBRE (2023" },
+    { lat: `${curmn} - ${nextmn} (${cury}` },
     { zh: "年" },
-    { lat: "12" },
+    { lat: curm + 1 + "" },
     { zh: "月" },
     { lat: ")" },
   ];
@@ -182,6 +198,12 @@ const agents_rl = [
     rld: "JJPPNNRRJJPPNNRRJJPPNNRRJJPPNNR",
   }),
 ];
+
+function getFrenchMonthName(index) {
+  const month = new Date(2000, index, 1); // Using any year, day 1 to get a consistent result
+  const monthName = month.toLocaleString("fr-FR", { month: "long" });
+  return monthName;
+}
 
 function centeTextInRect(
   doc,
@@ -215,11 +237,13 @@ function centeTextInRect(
 }
 
 function drawTextInRect(doc, text, font_size, x, y, w, h) {
-  //doc.text(text, x,y)
+  const origi_fsize = doc.getFontSize();
+  doc.setFontSize(font_size);
   const { w: text_w, h: text_h } = doc.getTextDimensions(text);
   let text_x = x + (w - text_w) / 2;
   let text_y = y + h * 0.7;
   doc.text(text, text_x, text_y);
+  doc.setFontSize(origi_fsize);
 }
 
 function getTextTokensDimensions(doc, font_size, tokens) {
