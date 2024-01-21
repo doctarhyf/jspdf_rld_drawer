@@ -9,6 +9,7 @@ import {
   drawLogo,
   draw_en_tete,
   centeTextInRect,
+  drawTextInRect,
 } from "./funcs.mjs";
 
 const orientation = "landscape";
@@ -74,7 +75,7 @@ function draw_rl(agents_rl) {
 }
 const PAGE_MARG = 15;
 const FONT_SIZE = 12;
-const BOX_WIDTH_SPACE_PCT = 1.2;
+const BOX_WIDTH_SPACE_PCT = 1.1;
 
 function draw_agent_rl(rld) {
   doc.setFontSize(FONT_SIZE);
@@ -83,21 +84,21 @@ function draw_agent_rl(rld) {
 
     hline(doc, PAGE_MARG, h, PG_W - PAGE_MARG * 2);
 
-    let rect_row_0 = { y: h };
+    let rect_row_num = { y: h };
 
-    rect_row_0 = centeTextInRect(
+    rect_row_num = centeTextInRect(
       doc,
       PAGE_MARG,
-      rect_row_0.y + FONT_SIZE,
+      rect_row_num.y + FONT_SIZE,
       BOX_WIDTH_SPACE_PCT,
       FONT_SIZE,
       text_tokens
     );
 
-    rect_row_0 = centeTextInRect(
+    rect_row_num = centeTextInRect(
       doc,
-      rect_row_0.x,
-      rect_row_0.y + FONT_SIZE,
+      rect_row_num.x,
+      rect_row_num.y + FONT_SIZE,
       BOX_WIDTH_SPACE_PCT,
       FONT_SIZE,
       text_tokens,
@@ -105,9 +106,9 @@ function draw_agent_rl(rld) {
     );
 
     text_tokens = [{ lat: rld.nom }, { zh: "库齐" }];
-    let rect_row_1 = centeTextInRect(
+    let rect_row_agent = centeTextInRect(
       doc,
-      PAGE_MARG + rect_row_0.w,
+      PAGE_MARG + rect_row_num.w,
       h + FONT_SIZE,
       BOX_WIDTH_SPACE_PCT,
       FONT_SIZE,
@@ -115,29 +116,29 @@ function draw_agent_rl(rld) {
       [{ lat: "AGENT/" }, { zh: "工人" }]
     );
 
-    rect_row_1 = centeTextInRect(
+    rect_row_agent = centeTextInRect(
       doc,
-      PAGE_MARG + rect_row_0.w,
-      rect_row_1.y + FONT_SIZE,
+      PAGE_MARG + rect_row_num.w,
+      rect_row_agent.y + FONT_SIZE,
       BOX_WIDTH_SPACE_PCT,
       FONT_SIZE,
       text_tokens
     );
 
     text_tokens = [{ lat: "MAT./" }, { zh: "工号" }];
-    let rect_row_2 = centeTextInRect(
+    let rect_row_mat = centeTextInRect(
       doc,
-      PAGE_MARG + rect_row_0.w + rect_row_1.w,
+      PAGE_MARG + rect_row_num.w + rect_row_agent.w,
       h + FONT_SIZE,
       BOX_WIDTH_SPACE_PCT,
       FONT_SIZE,
       text_tokens
     );
 
-    rect_row_2 = centeTextInRect(
+    rect_row_mat = centeTextInRect(
       doc,
-      rect_row_2.x,
-      rect_row_2.y + FONT_SIZE,
+      rect_row_mat.x,
+      rect_row_mat.y + FONT_SIZE,
       BOX_WIDTH_SPACE_PCT,
       FONT_SIZE,
       text_tokens,
@@ -146,9 +147,60 @@ function draw_agent_rl(rld) {
     doc.rect(
       PAGE_MARG,
       h,
-      rect_row_0.w + rect_row_1.w + rect_row_2.w,
+      rect_row_num.w + rect_row_agent.w + rect_row_mat.w,
       FONT_SIZE
     );
+
+    const array_rld = rld.rld.split("");
+    const END_DATE = array_rld.length;
+    const num_days = array_rld.length;
+    let day_box_w =
+      (PG_W - PAGE_MARG - (rect_row_mat.x + rect_row_mat.w)) / num_days;
+
+    const days_x_start = rect_row_mat.x + rect_row_mat.w;
+    let day_boxes_w;
+    const day_box_h = rect_row_mat.h;
+    let date = 21;
+    array_rld.forEach((el, i) => {
+      day_boxes_w = i * day_box_w;
+
+      const day_box_y = rect_row_mat.y - FONT_SIZE * 2;
+      const date_box_y = day_box_y + FONT_SIZE;
+      const date_x = days_x_start + i * day_box_w;
+      const rld_data_y = rect_row_mat.y;
+
+      doc.rect(date_x, day_box_y, day_box_w, day_box_h);
+      doc.rect(date_x, date_box_y, day_box_w, day_box_h);
+
+      if (date > END_DATE) date = 1;
+      drawTextInRect(
+        doc,
+        date + "",
+        FONT_SIZE,
+        date_x,
+        date_box_y,
+        day_box_w,
+        day_box_h
+      );
+      date += 1;
+
+      doc.rect(date_x, rld_data_y, day_box_w, day_box_h);
+      //doc.text(el, date_x, rld_data_y + FONT_SIZE / 2);
+
+      drawTextInRect(
+        doc,
+        el,
+        FONT_SIZE,
+        date_x,
+        rld_data_y,
+        day_box_w,
+        day_box_h
+      );
+    });
+    /* array.forEach((el, i) => {
+      let x = rect_row_mat.x + rect_row_mat.w + i + day_box_w;
+      doc.rect(x, rect_row_mat.y, day_box_w, rect_row_mat.h);
+    }); */
   });
 
   doc.save("rl.pdf");

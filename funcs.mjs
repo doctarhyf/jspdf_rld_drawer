@@ -214,6 +214,14 @@ function centeTextInRect(
   return rect;
 }
 
+function drawTextInRect(doc, text, font_size, x, y, w, h) {
+  //doc.text(text, x,y)
+  const { w: text_w, h: text_h } = doc.getTextDimensions(text);
+  let text_x = x + (w - text_w) / 2;
+  let text_y = y + h * 0.7;
+  doc.text(text, text_x, text_y);
+}
+
 function getTextTokensDimensions(doc, font_size, tokens) {
   const orig_font_size = doc.getFontSize();
   doc.setFontSize(font_size);
@@ -255,4 +263,5 @@ export {
   agents_rl,
   getTextTokensDimensions,
   centeTextInRect,
+  drawTextInRect,
 };
