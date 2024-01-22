@@ -9,7 +9,7 @@ import {
 } from "./funcs_print.mjs";
 
 const agz = [
-  ...Array(15).fill({
+  ...Array(68).fill({
     nom: {
       fr: "MUTUNDA KOJI Franvale",
       zh: "库齐",
@@ -27,7 +27,9 @@ const agz = [
 print_agents_rl(doc, agz);
 
 function print_agents_rl(doc, agents_list) {
+  const limit = 14;
   const pw = 297;
+  const ph = 210;
   const pm = 15;
   const fsize = 10;
 
@@ -42,16 +44,27 @@ function print_agents_rl(doc, agents_list) {
   let orig_rly = LOGO_H + pm + 10;
   let rly = orig_rly;
   let rlx = pm;
+  let newPage = false;
 
+  let idx = 0;
   agents_list.forEach((el, i) => {
-    draw_agent_single_line(doc, { ...el, id: i }, rlx, rly + i * fsize, pw, pm);
+    let y = newPage ? idx * fsize + pm : rly + idx * fsize;
+
+    draw_agent_single_line(doc, { ...el, id: i }, rlx, y, pw, pm);
+    if (idx <= limit) {
+      idx++;
+    } else {
+      idx = 0;
+      doc.addPage();
+      newPage = true;
+    }
   });
 
   doc.save("rl.pdf");
 }
 
 function draw_agent_single_line(doc, agd, x, y, pw, pm) {
-  console.log(agd);
+  const ph = 210;
 
   const pct = 1.2;
   const fsize = 10;
@@ -89,6 +102,12 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
   rld_data.forEach((el, i) => {
     drawTextInRect2(doc, el, fsize, bx + i * box_w, by, box_w, box_h, true);
   });
+
+  /* let cur_content_h = rect.y + rect.h;
+  if (cur_content_h >= ph - pm) {
+    doc.addPage();
+  }
+  console.log("cur_content_h : ", cur_content_h); */
 }
 
 function draw_logo(doc, x, y, w, h) {
