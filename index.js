@@ -20,7 +20,7 @@ const agz = [
     poste: "INT",
     id: 13,
     contrat: "GCK",
-    mat: "L0501",
+    matricule: "L0501",
   }),
 ];
 
@@ -36,8 +36,8 @@ function print_agents_rl(doc, agents_list) {
   const LOGO_W = (293 / 10) * 2;
   const LOGO_H = (66 / 10) * 2;
 
-  //draw_date(doc, pw, pm);
-  //draw_logo(doc, LOGO_X, LOGO_Y, LOGO_W, LOGO_H);
+  draw_date(doc, pw, pm);
+  draw_logo(doc, LOGO_X, LOGO_Y, LOGO_W, LOGO_H);
 
   let orig_rly = LOGO_H + pm + 10;
   let rly = orig_rly;
@@ -72,7 +72,7 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
   ]);
 
   rect = centeTextInRect(doc, rect.x + rect.w, y, pct, fsize, [
-    { lat: `${agd.contrat} ${agd.mat}` },
+    { lat: `${agd.contrat} ${agd.matricule}` },
   ]);
 
   let boxes_w = pw - pm - (rect.x + rect.w);
