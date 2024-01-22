@@ -36,7 +36,7 @@ function print_agents_rl(doc, agents_list) {
   const LOGO_W = (293 / 10) * 2;
   const LOGO_H = (66 / 10) * 2;
 
-  draw_date(doc, pw, pm);
+  draw_date(doc, pw, pm, fsize);
   draw_logo(doc, LOGO_X, LOGO_Y, LOGO_W, LOGO_H);
 
   let orig_rly = LOGO_H + pm + 10;
@@ -98,8 +98,12 @@ function draw_logo(doc, x, y, w, h) {
   doc.addImage(logo, "PNG", x, y, w, h);
 }
 
-function draw_date(doc, page_width, page_margin) {
+function draw_date(doc, page_width, page_margin, font_size) {
+  const old_font_size = doc.getFontSize();
+  doc.setFontSize(font_size);
   const date = new Date().toDateString();
   let { w, h } = doc.getTextDimensions(date);
+
   doc.text(date, page_width - w - page_margin, page_margin);
+  doc.setFontSize(old_font_size);
 }
