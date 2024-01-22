@@ -47,10 +47,11 @@ function print_agents_rl(doc, agents_list) {
   let newPage = false;
 
   let idx = 0;
+  let line_rects;
   agents_list.forEach((el, i) => {
     let y = newPage ? idx * fsize + pm : rly + idx * fsize;
 
-    draw_agent_single_line(doc, { ...el, id: i }, rlx, y, pw, pm);
+    line_rects = draw_agent_single_line(doc, { ...el, id: i }, rlx, y, pw, pm);
     if (idx <= limit) {
       idx++;
     } else {
@@ -60,6 +61,8 @@ function print_agents_rl(doc, agents_list) {
     }
   });
 
+  console.log(line_rects);
+
   doc.save("rl.pdf");
 }
 
@@ -68,6 +71,8 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
 
   const pct = 1.2;
   const fsize = 10;
+
+  const rects = [];
 
   let rect = centeTextInRect(
     doc,
@@ -79,16 +84,23 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
     [{ lat: `${agd.id + ""}` }]
   );
 
+  rects.push({ ...rect });
+
   rect = centeTextInRect(doc, rect.x + rect.w, y, pct, fsize, [
     { lat: agd.nom.fr + " " },
     { zh: agd.nom.zh },
   ]);
 
+  rects.push({ ...rect });
+
   rect = centeTextInRect(doc, rect.x + rect.w, y, pct, fsize, [
     { lat: `${agd.contrat} ${agd.matricule}` },
   ]);
 
+  rects.push({ ...rect });
+
   let boxes_w = pw - pm - (rect.x + rect.w);
+  rects.push({ x: rect.x + rect.w, y: rect.y, w: boxes_w, h: rect.h });
   let rld_data = agd.rld.split("");
   let days_count = agd.rld.length;
   let box_w = boxes_w / agd.rld.length;
@@ -103,11 +115,7 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
     drawTextInRect2(doc, el, fsize, bx + i * box_w, by, box_w, box_h, true);
   });
 
-  /* let cur_content_h = rect.y + rect.h;
-  if (cur_content_h >= ph - pm) {
-    doc.addPage();
-  }
-  console.log("cur_content_h : ", cur_content_h); */
+  return rects;
 }
 
 function draw_logo(doc, x, y, w, h) {
