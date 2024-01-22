@@ -75,7 +75,7 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
     { lat: `${agd.contrat} ${agd.mat}` },
   ]);
 
-  let boxes_w = pw - pm * 2 - (rect.x + rect.w);
+  let boxes_w = pw - pm - (rect.x + rect.w);
   let rld_data = agd.rld.split("");
   let days_count = agd.rld.length;
   let box_w = boxes_w / agd.rld.length;
