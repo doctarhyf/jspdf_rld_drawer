@@ -6,6 +6,7 @@ import {
   centeTextInRect,
   drawTextInRect,
   drawTextInRect2,
+  getLargestRowWidths,
 } from "./funcs_print.mjs";
 
 function randomArray(len) {
@@ -34,52 +35,23 @@ function randomArray(len) {
 //console.log(randomArray(68));
 const ag_list = randomArray(68);
 
-getLargestRowWidths(ag_list);
+print_agents_rl(doc, ag_list);
 
-function getLargestRowWidths(agents_array) {
-  let widths = {};
-  let keys_to_check = ["nom", "matricule"];
+function getLastDateOfMonth(year, month) {
+  // Create a new Date object with the next month's first day
+  let nextMonthFirstDay = new Date(year, month + 1, 1);
 
-  agents_array.forEach((ag, i) => {
-    Object.entries(ag).map((d, i) => {
-      const k = d[0];
-      const v = d[1];
-      const len = JSON.stringify(d[1]).length;
-      if (keys_to_check.includes(k)) {
-        const dt = JSON.stringify(v).length;
+  // Subtract one day to get the last day of the current month
+  let lastDayOfMonth = new Date(nextMonthFirstDay - 1);
 
-        if (widths[k] === undefined) {
-          widths[k] = [dt];
-        } else {
-          widths[k].push(dt);
-        }
-      }
-    });
-  });
-
-  let max_ws = {};
-  Object.entries(widths).forEach((el, i) => {
-    max_ws[el[0]] = Math.max(...el[1]);
-  });
-
-  console.log(widths.nom);
-
-  const { nom: max_w_nom, matricule: max_w_mat } = max_ws;
-  console.log(max_w_nom, max_w_mat);
-
-  const idx_max_w_nom = widths.nom.findIndex((it) => it === max_w_nom);
-  console.log(idx_max_w_nom);
-
-  const idx_max_w_mat = widths.matricule.findIndex((it) => it === max_w_mat);
-  console.log(idx_max_w_mat);
-  const idxz = { idx_max_w_nom: idx_max_w_nom, idx_max_w_mat: idx_max_w_mat };
-  console.log(idxz);
-  return idxz;
+  // Return the date part of the last day
+  return lastDayOfMonth.getDate();
 }
 
-//print_agents_rl(doc, randomArray(68));
-
 function print_agents_rl(doc, agents_list) {
+  const largest_row_widths = getLargestRowWidths(agents_list);
+  console.log(largest_row_widths);
+
   const limit = 14;
   const pw = 297;
   const ph = 210;
@@ -91,7 +63,6 @@ function print_agents_rl(doc, agents_list) {
   const LOGO_W = (293 / 10) * 2;
   const LOGO_H = (66 / 10) * 2;
 
-  return;
   draw_date(doc, pw, pm, fsize);
   draw_logo(doc, LOGO_X, LOGO_Y, LOGO_W, LOGO_H);
 
@@ -102,10 +73,43 @@ function print_agents_rl(doc, agents_list) {
 
   let idx = 0;
   let line_rects;
-  agents_list.forEach((el, i) => {
-    let y = newPage ? idx * fsize + pm : rly + idx * fsize;
 
-    line_rects = draw_agent_single_line(doc, el, rlx, y, pw, pm);
+  //draw header
+  const { idx_max_w_nom, idx_max_w_mat, agent_data } = largest_row_widths;
+  let header_el_w_data = { ...agents_list[idx_max_w_nom] };
+  agents_list.unshift(header_el_w_data);
+
+  agents_list.forEach((cur_ag_data, i) => {
+    let y = newPage ? idx * fsize + pm : rly + idx * fsize + fsize;
+    const is_header_row = i === 0;
+    if (is_header_row) {
+      line_rects = draw_agent_single_line(
+        doc,
+        {
+          ...cur_ag_data,
+          id: "No",
+          nom: { fr: "AGENT/", zh: "员工" },
+          matricule: "MAT.",
+          contrat: "",
+        },
+        rlx,
+        y,
+        pw,
+        pm,
+        header_el_w_data,
+        [...Array(cur_ag_data.rld.length).fill("x")]
+      );
+    } else {
+      line_rects = draw_agent_single_line(
+        doc,
+        cur_ag_data,
+        rlx,
+        y,
+        pw,
+        pm,
+        header_el_w_data
+      );
+    }
     if (idx <= limit) {
       idx++;
     } else {
@@ -120,7 +124,7 @@ function print_agents_rl(doc, agents_list) {
   doc.save("rl.pdf");
 }
 
-function draw_agent_single_line(doc, agd, x, y, pw, pm) {
+function draw_agent_single_line(doc, agd, x, y, pw, pm, largest_w_data, dates) {
   const ph = 210;
 
   const pct = 1.2;
@@ -140,16 +144,27 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
 
   rects.push({ ...rect });
 
-  rect = centeTextInRect(doc, rect.x + rect.w, y, pct, fsize, [
-    { lat: agd.nom.fr },
-    { zh: agd.nom.zh },
-  ]);
+  rect = centeTextInRect(
+    doc,
+    rect.x + rect.w,
+    y,
+    pct,
+    fsize,
+    [{ lat: largest_w_data.nom.fr }, { zh: largest_w_data.nom.zh }],
+    [{ lat: agd.nom.fr }, { zh: agd.nom.zh }]
+  );
 
   rects.push({ ...rect });
 
-  rect = centeTextInRect(doc, rect.x + rect.w, y, pct, fsize, [
-    { lat: `${agd.contrat} ${agd.matricule}` },
-  ]);
+  rect = centeTextInRect(
+    doc,
+    rect.x + rect.w,
+    y,
+    pct,
+    fsize,
+    [{ lat: "_________" }],
+    [{ lat: `${agd.contrat} ${agd.matricule}` }]
+  );
 
   rects.push({ ...rect });
 
@@ -165,7 +180,9 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
   let bx = box_orig_x;
   let by = box_orig_y;
 
-  rld_data.forEach((el, i) => {
+  let box_data = dates ? dates : rld_data;
+
+  box_data.forEach((el, i) => {
     drawTextInRect2(doc, el, fsize, bx + i * box_w, by, box_w, box_h, true);
   });
 

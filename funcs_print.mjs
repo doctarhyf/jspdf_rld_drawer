@@ -18,6 +18,53 @@ console.log(r);
 function hline(doc, x, y, len) {
   doc.line(x, y, x + len, y);
 }
+function getLargestRowWidths(agents_array) {
+  let widths = {};
+  let keys_to_check = ["nom", "matricule"];
+
+  agents_array.forEach((ag, i) => {
+    Object.entries(ag).map((d, i) => {
+      const k = d[0];
+      const v = d[1];
+      const len = JSON.stringify(d[1]).length;
+      if (keys_to_check.includes(k)) {
+        const dt = JSON.stringify(v).length;
+
+        if (widths[k] === undefined) {
+          widths[k] = [dt];
+        } else {
+          widths[k].push(dt);
+        }
+      }
+    });
+  });
+
+  let max_ws = {};
+  Object.entries(widths).forEach((el, i) => {
+    max_ws[el[0]] = Math.max(...el[1]);
+  });
+
+  //console.log(widths.nom);
+
+  const { nom: max_w_nom, matricule: max_w_mat } = max_ws;
+  //console.log(max_w_nom, max_w_mat);
+
+  const idx_max_w_nom = widths.nom.findIndex((it) => it === max_w_nom);
+  //console.log(idx_max_w_nom);
+
+  const idx_max_w_mat = widths.matricule.findIndex((it) => it === max_w_mat);
+  //console.log(idx_max_w_mat);
+  const widths_indexes = {
+    idx_max_w_nom: idx_max_w_nom,
+    idx_max_w_mat: idx_max_w_mat,
+    agent_data: {
+      nom: agents_array[idx_max_w_nom].nom,
+      matricule: agents_array[idx_max_w_mat].matricule,
+    },
+  };
+  //console.log(widths_indexes);
+  return widths_indexes;
+}
 
 function vline(doc, x, y, len) {
   doc.line(x, y, x, y + len);
@@ -547,4 +594,5 @@ export {
   print_agents_list_roulement,
   doc,
   drawTextInRect2,
+  getLargestRowWidths,
 };
