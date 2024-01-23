@@ -26,15 +26,58 @@ function randomArray(len) {
       matricule: "L0501",
     };
     agents_data.push(d);
-    console.log(d);
   }
 
   return agents_data;
 }
 
 //console.log(randomArray(68));
+const ag_list = randomArray(68);
 
-print_agents_rl(doc, randomArray(68));
+getLargestRowWidths(ag_list);
+
+function getLargestRowWidths(agents_array) {
+  let widths = {};
+  let keys_to_check = ["nom", "matricule"];
+
+  agents_array.forEach((ag, i) => {
+    Object.entries(ag).map((d, i) => {
+      const k = d[0];
+      const v = d[1];
+      const len = JSON.stringify(d[1]).length;
+      if (keys_to_check.includes(k)) {
+        const dt = JSON.stringify(v).length;
+
+        if (widths[k] === undefined) {
+          widths[k] = [dt];
+        } else {
+          widths[k].push(dt);
+        }
+      }
+    });
+  });
+
+  let max_ws = {};
+  Object.entries(widths).forEach((el, i) => {
+    max_ws[el[0]] = Math.max(...el[1]);
+  });
+
+  console.log(widths.nom);
+
+  const { nom: max_w_nom, matricule: max_w_mat } = max_ws;
+  console.log(max_w_nom, max_w_mat);
+
+  const idx_max_w_nom = widths.nom.findIndex((it) => it === max_w_nom);
+  console.log(idx_max_w_nom);
+
+  const idx_max_w_mat = widths.matricule.findIndex((it) => it === max_w_mat);
+  console.log(idx_max_w_mat);
+  const idxz = { idx_max_w_nom: idx_max_w_nom, idx_max_w_mat: idx_max_w_mat };
+  console.log(idxz);
+  return idxz;
+}
+
+//print_agents_rl(doc, randomArray(68));
 
 function print_agents_rl(doc, agents_list) {
   const limit = 14;
@@ -48,6 +91,7 @@ function print_agents_rl(doc, agents_list) {
   const LOGO_W = (293 / 10) * 2;
   const LOGO_H = (66 / 10) * 2;
 
+  return;
   draw_date(doc, pw, pm, fsize);
   draw_logo(doc, LOGO_X, LOGO_Y, LOGO_W, LOGO_H);
 
