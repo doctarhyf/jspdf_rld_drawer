@@ -8,23 +8,33 @@ import {
   drawTextInRect2,
 } from "./funcs_print.mjs";
 
-const agz = [
-  ...Array(68).fill({
-    nom: {
-      fr: "MUTUNDA KOJI Franvale",
-      zh: "库齐",
-    },
-    rld: "JJJNNNRRRJJJNNNRRRJJJNNNRRRJJJN",
-    month: 1,
-    year: 2024,
-    poste: "INT",
-    id: 13,
-    contrat: "GCK",
-    matricule: "L0501",
-  }),
-];
+function randomArray(len) {
+  const agents_data = [];
+  let fr = "MUTUNDA KOJI Franvale";
+  for (let index = 0; index < len; index++) {
+    let d = {
+      nom: {
+        fr: fr.slice(0, Math.random() * fr.length),
+        zh: "库齐",
+      },
+      rld: "JJJNNNRRRJJJNNNRRRJJJNNNRRRJJJN",
+      month: 1,
+      year: 2024,
+      poste: "INT",
+      id: index,
+      contrat: "GCK",
+      matricule: "L0501",
+    };
+    agents_data.push(d);
+    console.log(d);
+  }
 
-print_agents_rl(doc, agz);
+  return agents_data;
+}
+
+//console.log(randomArray(68));
+
+print_agents_rl(doc, randomArray(68));
 
 function print_agents_rl(doc, agents_list) {
   const limit = 14;
@@ -51,7 +61,7 @@ function print_agents_rl(doc, agents_list) {
   agents_list.forEach((el, i) => {
     let y = newPage ? idx * fsize + pm : rly + idx * fsize;
 
-    line_rects = draw_agent_single_line(doc, { ...el, id: i }, rlx, y, pw, pm);
+    line_rects = draw_agent_single_line(doc, el, rlx, y, pw, pm);
     if (idx <= limit) {
       idx++;
     } else {
@@ -87,7 +97,7 @@ function draw_agent_single_line(doc, agd, x, y, pw, pm) {
   rects.push({ ...rect });
 
   rect = centeTextInRect(doc, rect.x + rect.w, y, pct, fsize, [
-    { lat: agd.nom.fr + " " },
+    { lat: agd.nom.fr },
     { zh: agd.nom.zh },
   ]);
 
