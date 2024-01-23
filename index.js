@@ -48,9 +48,27 @@ function getLastDateOfMonth(year, month) {
   return lastDayOfMonth.getDate();
 }
 
+function getRoulementDates(year, month) {
+  let y = year;
+  let m = month - 1;
+  console.log("y:", y, "m:", m);
+  let dts = [];
+  const last_date = getLastDateOfMonth(y, m);
+  console.log("getLastDateOfMonth:", last_date);
+  const tot_days = last_date - 21 + 20;
+  //console.log(tot_days);
+  let dt = 21;
+  for (let index = 0; index <= tot_days; index++) {
+    if (dt > last_date) dt = 1;
+    dts.push(dt + "");
+    dt++;
+  }
+
+  return dts;
+}
+
 function print_agents_rl(doc, agents_list) {
   const largest_row_widths = getLargestRowWidths(agents_list);
-  console.log(largest_row_widths);
 
   const limit = 14;
   const pw = 297;
@@ -77,6 +95,11 @@ function print_agents_rl(doc, agents_list) {
   //draw header
   const { idx_max_w_nom, idx_max_w_mat, agent_data } = largest_row_widths;
   let header_el_w_data = { ...agents_list[idx_max_w_nom] };
+
+  const dates = getRoulementDates(
+    header_el_w_data.year,
+    header_el_w_data.month
+  );
   agents_list.unshift(header_el_w_data);
 
   agents_list.forEach((cur_ag_data, i) => {
@@ -97,7 +120,7 @@ function print_agents_rl(doc, agents_list) {
         pw,
         pm,
         header_el_w_data,
-        [...Array(cur_ag_data.rld.length).fill("x")]
+        dates
       );
     } else {
       line_rects = draw_agent_single_line(
