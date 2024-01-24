@@ -166,6 +166,7 @@ function drawLogo(doc) {
   const LOGO_X = MARG;
   const LOGO_Y = 10;
   const LOGO_W = (293 / 10) * 2;
+  const LOGO_H = (66 / 10) * 2;
 
   doc.setFontSize(12);
   const date = new Date().toDateString();
@@ -175,7 +176,8 @@ function drawLogo(doc) {
   doc.setFontSize(16);
 
   doc.addImage(logo, "PNG", LOGO_X, LOGO_Y, LOGO_W, LOGO_H);
-  //doc.line(MARG, LOGO_H + MARG, PG_W - MARG, LOGO_H + MARG);
+
+  return { x: LOGO_X, y: LOGO_Y, w: LOGO_W, h: LOGO_H };
 }
 
 function draw_en_tete(
@@ -788,4 +790,5 @@ export {
   doc,
   drawTextInRect2,
   getLargestRowWidths,
+  draw_date,
 };
