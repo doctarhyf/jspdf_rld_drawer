@@ -119,15 +119,22 @@ function draw_charg_table(doc, pw, ph, pm, rect_title, fsize) {
   const table_w = pw - pm * 2;
   const table_h = ph - pm - fsize - (rect_title.y + rect_title.h);
 
-  console.log(table_w, table_h);
-
   const boxes_rect = [];
   const cols = [19, 21, 22, 45, 23, 29, 22];
   const rows = [15, 56, 11, 56, 13, 60, 13, 13];
 
-  rows.forEach((row, irow) => {
-    doc.line(table_x, row + rect_title.y, pw, row + rect_title.y);
-  });
+  let totx = 0;
+  let toty = 0;
+  const boxes = [];
+  rows.forEach((boxh, iy) => {
+    toty = rows.slice(0, iy).reduce((acc, cv) => acc + cv, 0);
+    cols.forEach((boxw, ix) => {
+      totx = cols.slice(0, ix).reduce((acc, cv) => acc + cv, 0);
+      const box = { x: table_x + totx, y: table_y + toty, w: boxw, h: boxh };
 
-  doc.rect(table_x, table_y, table_w, table_h);
+      doc.rect(box.x, box.y, box.w, box.h);
+      doc.text("this is cool", box.x, box.y, { angle: 270, align: "center" });
+      boxes.push(box);
+    });
+  });
 }
